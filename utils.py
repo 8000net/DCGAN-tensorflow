@@ -33,7 +33,7 @@ def get_image(image_path, input_height, input_width,
 def save_images(images, size, image_path):
   return imsave(inverse_transform(images), size, image_path)
 
-def save_individual_images(images, dir_path, time, start_index):
+def save_individual_images(images, dir_path, time, start_index=0):
     images = inverse_transform(images)
     for i, image in enumerate(images):
         path = os.path.join(dir_path, 'test_%s_%d.png' % (time, start_index+i))
@@ -255,6 +255,15 @@ def visualize(sess, dcgan, config, option):
     new_image_set = [merge(np.array([images[idx] for images in image_set]), [10, 10]) \
         for idx in range(64) + range(63, -1, -1)]
     make_gif(new_image_set, './samples/test_gif_merged.gif', duration=8)
+  elif option == 5:
+    time = strftime("%Y%m%d%H%M%S", gmtime())
+    z_sample = np.load(config.z_file)
+
+    # dumb hack to get past fixed batch size
+    z_sample = np.tile(z_sample, (64, 1))
+
+    samples = sess.run(dcgan.sampler, feed_dict={dcgan.z: z_sample})
+    save_individual_images(samples[:1], './samples', time)
 
 
 def image_manifold_size(num_images):
