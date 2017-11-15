@@ -24,6 +24,7 @@ flags.DEFINE_string("sample_dir", "samples", "Directory name to save the image s
 flags.DEFINE_boolean("train", False, "True for training, False for testing [False]")
 flags.DEFINE_boolean("crop", False, "True for training, False for testing [False]")
 flags.DEFINE_boolean("visualize", False, "True for visualizing, False for nothing [False]")
+flags.DEFINE_integer("visualize_iters", 1, "Number of iterations to visualize")
 FLAGS = flags.FLAGS
 
 def main(_):
@@ -90,7 +91,7 @@ def main(_):
     #                 [dcgan.h4_w, dcgan.h4_b, None])
 
     # Below is codes for visualization
-    OPTION = 1
+    OPTION = 0
     visualize(sess, dcgan, FLAGS, OPTION)
 
 if __name__ == '__main__':

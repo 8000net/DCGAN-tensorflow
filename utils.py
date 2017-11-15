@@ -5,6 +5,7 @@ from __future__ import division
 import math
 import json
 import random
+import os
 import pprint
 import scipy.misc
 import numpy as np
@@ -31,6 +32,12 @@ def get_image(image_path, input_height, input_width,
 
 def save_images(images, size, image_path):
   return imsave(inverse_transform(images), size, image_path)
+
+def save_individual_images(images, dir_path, time):
+    images = inverse_transform(images)
+    for i, image in enumerate(images):
+        path = os.path.join(dir_path, 'test_%s_%d.png' % (time, i))
+        scipy.misc.imsave(path, image)
 
 def imread(path, grayscale = False):
   if (grayscale):
@@ -172,9 +179,13 @@ def make_gif(images, fname, duration=2, true_image=False):
 def visualize(sess, dcgan, config, option):
   image_frame_dim = int(math.ceil(config.batch_size**.5))
   if option == 0:
-    z_sample = np.random.uniform(-0.5, 0.5, size=(config.batch_size, dcgan.z_dim))
-    samples = sess.run(dcgan.sampler, feed_dict={dcgan.z: z_sample})
-    save_images(samples, [image_frame_dim, image_frame_dim], './samples/test_%s.png' % strftime("%Y%m%d%H%M%S", gmtime()))
+    for i in range(config.visualize_iters):
+      time = strftime("%Y%m%d%H%M%S", gmtime())
+      z_sample = np.random.uniform(-0.5, 0.5, size=(config.batch_size, dcgan.z_dim))
+      samples = sess.run(dcgan.sampler, feed_dict={dcgan.z: z_sample})
+      save_images(samples, [image_frame_dim, image_frame_dim], './samples/test_grid_%s.png' % time)
+      save_individual_images(samples, './samples', time)
+      np.save('./samples/z_%s.npy' % time, z_sample)
   elif option == 1:
     values = np.arange(0, 1, 1./config.batch_size)
     for idx in xrange(100):
