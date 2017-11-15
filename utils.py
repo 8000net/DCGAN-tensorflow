@@ -258,12 +258,8 @@ def visualize(sess, dcgan, config, option):
   elif option == 5:
     time = strftime("%Y%m%d%H%M%S", gmtime())
     z_sample = np.load(config.z_file)
-
-    # dumb hack to get past fixed batch size
-    z_sample = np.tile(z_sample, (64, 1))
-
     samples = sess.run(dcgan.sampler, feed_dict={dcgan.z: z_sample})
-    save_individual_images(samples[:1], './samples', time)
+    save_images(samples, [image_frame_dim, image_frame_dim], './samples/arithmetic_grid_%s.png' % time)
 
 
 def image_manifold_size(num_images):
